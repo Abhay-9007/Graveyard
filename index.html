@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om Nagar Colony - Weather Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location i {
+            font-size: 1.8rem;
+            color: #ff9d00;
+        }
+        
+        .location h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .update-time {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ff9d00;
+        }
+        
+        .current-weather {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .temp-display {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .weather-status {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feels-like {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .sun-moon {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .sun-moon div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .daily-forecast {
+            grid-column: span 2;
+        }
+        
+        .daily-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        
+        .day-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .day-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .day-temp {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .detail-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .detail-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 157, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .detail-text {
+            flex: 1;
+        }
+        
+        .detail-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .aqi-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: #4CAF50;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .running-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .running-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .running-times {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .running-time {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .running-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 0, 0, 0.2);
+            font-weight: 600;
+        }
+        
+        .radar-section {
+            margin-top: 30px;
+        }
+        
+        .radar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .radar-city {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .radar-city:hover {
+            background: rgba(255, 157, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .moon-phase {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .moon-icon {
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .daily-forecast {
+                grid-column: 1;
+            }
+            
+            .daily-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .daily-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .temp-display {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Mock API data for demonstration
+        const mockWeatherData = {
+            location: "Om Nagar Colony",
+            updated: "01/07, 10:13 pm",
+            current: {
+                temp: 29,
+                feels_like: 36,
+                condition: "Partly Cloudy",
+                low: 27,
+                high: 31,
+                humidity: 84,
+                wind: 4,
+                pressure: 998.0,
+                visibility: "Unlimited",
+                uv: "Low",
+                aqi: 81,
+                aqiStatus: "Satisfactory",
+                moonPhase: "Waxing crescent"
+            },
+            sun: {
+                sunrise: "5:27 am",
+                sunset: "7:18 pm",
+                moonrise: "11:06 am",
+                moonset: "11:31 pm"
+            },
+            forecast: [
+                { day: "Yesterday", high: 31, low: 26, rain: 0 },
+                { day: "Today", high: 31, low: 27, rain: 18 },
+                { day: "Wed", high: 33, low: 27, rain: 41 },
+                { day: "Thu", high: 33, low: 27, rain: 51 },
+                { day: "Fri", high: 33, low: 27, rain: 73 },
+                { day: "Sat", high: 34, low: 28, rain: 51 },
+                { day: "Sun", high: 34, low: 28, rain: 47 },
+                { day: "Mon", high: 33, low: 27, rain: 60 }
+            ],
+            running: {
+                status: "Poor",
+                message: "Poor weather for running right now",
+                times: ["9:30 pm", "10:30 pm", "11:30 pm"]
+            },
+            radarCities: [
+                "Lahore", "Multan", "PUN", "HAR", "New Delhi", 
+                "Gare", "Gerise", "Nerosh", "Isla nabad", "Jalpur",
+                "Kota", "Ahmedabad", "Surat", "Nashik", "Agra",
+                "Lucknow", "Prayagraj", "Patna", "Ranchi", "Cuttu"
+            ]
+        };
+
+        // Function to simulate API call
+        const fetchWeatherData = () => {
+            return new Promise((resolve) => {
+                // Simulate network delay
+                setTimeout(() => {
+                    resolve(mockWeatherData);
+                }, 800);
+            });
+        };
+
+        const WeatherDashboard = () => {
+            const [weatherData, setWeatherData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        const data = await fetchWeatherData();
+                        setWeatherData(data);
+                        setLoading(false);
+                    } catch (error) {
+                        console.error("Error fetching weather data:", error);
+                        setLoading(false);
+                    }
+                };
+                
+                loadData();
+                
+                // Set up interval to update data every 10 minutes
+                const interval = setInterval(loadData, 10 * 60 * 1000);
+                
+                return () => clearInterval(interval);
+            }, []);
+            
+            if (loading) {
+                return (
+                    <div className="container">
+                        <div className="loading">Loading weather data...</div>
+                    </div>
+                );
+            }
+            
+            if (!weatherData) {
+                return (
+                    <div className="container">
+                        <div className="error">Failed to load weather data. Please try again later.</div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="container">
+                    <header>
+                        <div className="location">
+                            <i className="fas fa-location-dot"></i>
+                            <h1>{weatherData.location}</h1>
+                        </div>
+                        <div className="update-time">
+                            Updated: {weatherData.updated}
+                        </div>
+                    </header>
+                    
+                    <div className="main-grid">
+                        <div className="card current-weather">
+                            <div className="temp-display">
+                                {weatherData.current.temp}°
+                            </div>
+                            <div className="weather-status">
+                                <i className="fas fa-cloud-sun"></i>
+                                {weatherData.current.condition}
+                            </div>
+                            <div className="feels-like">
+                                Feels like {weatherData.current.feels_like}°
+                            </div>
+                            <div className="sun-moon">
+                                <div>
+                                    <i className="fas fa-sun"></i>
+                                    <span>Sunrise: {weatherData.sun.sunrise}</span>
+                                </div>
+                                <div>
+                                    <i className="fas fa-moon"></i>
+                                    <span>Sunset: {weatherData.sun.sunset}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="card">
+                            <div className="card-title">
+                                <span>Moon Phase</span>
+                            </div>
+                            <div className="moon-phase">
+                                <i className="fas fa-moon"></i>
+                                <span>{weatherData.current.moonPhase}</span>
+                            </div>
+                            <div className="sun-moon">
+                                <div>
+                                    <i className="fas fa-arrow-up"></i>
+                                    <span>Moonrise: {weatherData.sun.moonrise}</span>
+                                </div>
+                                <div>
+                                    <i className="fas fa-arrow-down"></i>
+                                    <span>Moonset: {weatherData.sun.moonset}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="card daily-forecast">
+                            <div className="card-title">
+                                <span>7-Day Forecast</span>
+                            </div>
+                            <div className="daily-container">
+                                {weatherData.forecast.map((day, index) => (
+                                    <div className="day-card" key={index}>
+                                        <div className="day-name">{day.day}</div>
+                                        <div className="rain-chance">{day.rain}%</div>
+                                        <div className="day-temp">
+                                            {day.high}° / {day.low}°
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="details-grid">
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-wind"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.wind} km/h</div>
+                                <div className="detail-label">Wind Speed</div>
+                            </div>
+                        </div>
+                        
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-tint"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.humidity}%</div>
+                                <div className="detail-label">Humidity</div>
+                            </div>
+                        </div>
+                        
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-sun"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.uv}</div>
+                                <div className="detail-label">UV Index</div>
+                            </div>
+                        </div>
+                        
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-smog"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.aqi}</div>
+                                <div className="detail-label">Air Quality Index</div>
+                                <div className="aqi-status">{weatherData.current.aqiStatus}</div>
+                            </div>
+                        </div>
+                        
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-compress-alt"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.pressure} mb</div>
+                                <div className="detail-label">Pressure</div>
+                                <div>Currently rising rapidly</div>
+                            </div>
+                        </div>
+                        
+                        <div className="card detail-card">
+                            <div className="detail-icon">
+                                <i className="fas fa-eye"></i>
+                            </div>
+                            <div className="detail-text">
+                                <div className="detail-value">{weatherData.current.visibility}</div>
+                                <div className="detail-label">Visibility</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="running-section">
+                        <div className="running-header">
+                            <div className="card-title">
+                                <span>Running Conditions</span>
+                            </div>
+                        </div>
+                        <div className="running-times">
+                            {weatherData.running.times.map((time, index) => (
+                                <div className="running-time" key={index}>
+                                    {time}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="running-status">
+                            {weatherData.running.message}
+                        </div>
+                    </div>
+                    
+                    <div className="radar-section">
+                        <div className="card-title">
+                            <span>Radar and Maps</span>
+                        </div>
+                        <div className="radar-grid">
+                            {weatherData.radarCities.map((city, index) => (
+                                <div className="radar-city" key={index}>
+                                    {city}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <footer style={{marginTop: '30px', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.7)'}}>
+                        <p>The Weather Channel</p>
+                        <p>Updated {weatherData.updated}</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<WeatherDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
